@@ -1,12 +1,12 @@
-package movies;
+package imdb::movies;
 
 use constant TYPE => 'movie';
 
 BEGIN {
-	unshift( @INC, "../lib" );
+	unshift( @INC, "../" );
 }
-use processor;
-use IMDBUtil;
+
+use lib::IMDBUtil;
 
 our $i = 0;
 our $j =0;
@@ -50,11 +50,7 @@ sub parse {
 	}
 
 	$i++;
-	if ( $i > 10000000 ) {
-		print "$i not-accepted:$j ; suspended: $s\n";
-		processor::destroy;
-		die;
-	}
+	
 
 	return %ret;
 }

@@ -1,10 +1,10 @@
-package actors;
+package imdb::actors;
 
 BEGIN {
-	unshift( @INC, "../lib" );
+	unshift( @INC, "../" );
 }
-use processor;
-use IMDBUtil( 'trim', 'debug' );
+
+use lib::IMDBUtil( 'trim', 'debug' );
 
 our $context;
 our %actor;
@@ -114,13 +114,14 @@ sub store {
 }
 
 sub set_context {
+	print "ACTOR\n";
 	$context = shift;
 
 }
 
 # debugging helper methods, to be deleted once everything is finished.
 sub how_many_lines {
-	return -1;
+	return 10;
 }
 
 sub print_info {

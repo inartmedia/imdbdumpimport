@@ -1,8 +1,8 @@
-package IMDBUtil;
+package lib::IMDBUtil;
 # copied from http://www.somacon.com/p114.php
 use Exporter;
 our @ISA= ('Exporter');
-our @EXPORT_OK = ('trim','ltrim','rtrim','debug');
+our @EXPORT = ('trim','ltrim','rtrim','debug');
 use constant DEBUG => 0;
 # Perl trim function to remove whitespace from the start and end of the string
 sub trim
