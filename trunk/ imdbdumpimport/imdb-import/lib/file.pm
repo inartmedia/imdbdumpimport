@@ -1,8 +1,9 @@
-package file;
+package lib::file;
 
 use strict;
 use warnings;
-
+use Exporter;
+our @ISA = ('Exporter');
 our @EXPORT_OK=( 'open_file', 'close_file', 'next' );
 
 our $ffile;

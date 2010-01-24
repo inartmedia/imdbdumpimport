@@ -1,12 +1,15 @@
-package processor;
+package lib::processor;
 
 use strict;
 use warnings;
-
-use file;
-use db;
-
-our @EXPORT_OK = ('process','init');
+BEGIN {
+	unshift (@INC, "../");
+}
+use lib::file;
+use lib::db;
+use Exporter;
+our @ISA= ('Exporter');
+our @EXPORT = ('process','init');
 our $init = 0;
 
 sub init {
