@@ -4,16 +4,17 @@ use strict;
 use warnings;
 BEGIN {
 	unshift (@INC, "../");
+	unshift (@INC, "../imdb");
 }
-use lib::file;
+use lib::file('open_file','close_file','next_line');
 use lib::db;
 use Exporter;
 our @ISA= ('Exporter');
-our @EXPORT = ('process','init');
+our @EXPORT_OK = ('process','init','destroy');
 our $init = 0;
 
 sub init {
-	db::connect_to_database(@_);
+	lib::db::connect_to_database(@_);
 	$init = 1;
 }
 
@@ -21,8 +22,8 @@ sub process{
 	my $i = 0;
 	my ($file,$ctx,$handler) =  @_;
 	$handler->set_context($ctx);
-	file::open_file($file);
-	LABEL:while(my $line = file::next() ){
+	open_file($file);
+	while(my $line = next_line){
 		$i++;
 		chomp($line);
 		my %objects = $handler->parse($line);
@@ -34,15 +35,15 @@ sub process{
 	
 	$handler->print_info;
 	
-	file::close_file();
+	close_file();
 }
 
 sub destroy {
 	if ($init ==0 ){
 		return;
 	}
-	db::disconnect_from_database();
-	file::close_file();
+	lib::db::disconnect_from_database();
+	close_file();
 	$init = 0;
 }
 1;

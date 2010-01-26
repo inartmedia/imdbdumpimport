@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Exporter;
 our @ISA = ('Exporter');
-our @EXPORT_OK=( 'open_file', 'close_file', 'next' );
+our @EXPORT_OK=( 'open_file', 'close_file', 'next_line' );
 
 our $ffile;
 our $fname;
@@ -24,7 +24,7 @@ sub close_file {
 	$is_open = 0;
 }
 
-sub next() {
+sub next_line {
 	die "No file opened" if ( $is_open == 0 );
 	my $line = <$ffile>;
 	if ( !$line ) {
