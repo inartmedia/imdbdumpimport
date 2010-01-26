@@ -5,6 +5,8 @@ use constant TYPE => 'movie';
 BEGIN {
 	unshift( @INC, "../" );
 }
+use Exporter;
+our @ISA = qw(Exporter);
 
 use lib::IMDBUtil;
 
@@ -13,8 +15,9 @@ our $j =0;
 our $s = 0;
 
 sub new {
-	my $obj = {"l"=>"f"};
-	bless $obj, 'movies';
+	my $class = shift;
+	my $obj = {context=>undef};
+	bless $obj, $class;
 	return $obj;
 }
 sub is_store_ready{
@@ -26,23 +29,22 @@ sub parse {
 	my $line = shift;
 	my %ret = ( type => TYPE );
 	
-	if ($line =~ m/\{\{(SUSPENDED|SUSPENSION|SUSPENDE)\}\}/){
-		#print $line ." SuSpEnDeD\n";
-		$s++;
-	}
-	elsif ( $line =~ m/^(.+)\([\d|?]{4}(\/.+)?\)\s+\(([T]{0,1}V[G]{0,1})\)\s+([\d|?]{4}(-[\d|?]{4})?)(\s+\(.+\))?$/ ) {
-		#print $1." - ".$2." - ".$3. "\n";
-	}
-	elsif ( $line =~ m/^(.+)\([\d|?]{4}(\/.+)?\)\s+([\d|?]{4}(-[\d|?]{4})?)(\s+\(.+\))?$/ ){
+	if ( $line =~ m/^[^"](.+)\(([\d|?]{4})(\/[IVX]{1,5})?\)/g ) {
 		
-	}
-	elsif ($line =~ m/^\"(.+)\"\s+\([\d|?]{4}(\/.+)?\)\s+\{(.+)\}\s+([\d|?]{4}(-[\d|?]{4})?)(\s+\(.+\))?$/){
+		#print $1."  ".$2;
 		
+		if ($line =~ m/\G\s+\(([TVG]{1,2})\)/gc){
+		#	print " ($1) "
+						
+		}
+		if ($line =~ m/\G\s+\{\{SUSPENDED\}\}/cg){
+		#	print " [suspended] ";
+		}
+		#print "\n";
 	}
-	elsif ($line =~ m/^\"(.+)\"\s+\([\d|?]{4}(\/.+)?\)\s+\{(.+)\}\s+$/){
+	elsif ($line =~ m/^\"(.+)\"\s+\(([\d|?]{4})(\/[IVX]{1,5})?\)\s+(\{(.+)\})?/g){
 		
-	}
-	elsif ($line =~ m/^\"(.+)\"\s+\([\d|?]{4}(\/.+)?\)(\s+(\S+))?$/){
+		
 	}
 	else {
 		debug($line);	
@@ -66,7 +68,7 @@ sub set_context {
 
 # debugging helper methods, to be deleted once everything is finished.
 sub how_many_lines {
-	return 10000;
+	return -1;
 }
 
 sub print_info {
