@@ -3,7 +3,7 @@ package lib::IMDBUtil;
 use Exporter;
 our @ISA= ('Exporter');
 our @EXPORT = ('trim','ltrim','rtrim','debug');
-use constant DEBUG => 0;
+use constant DEBUG => 1;
 # Perl trim function to remove whitespace from the start and end of the string
 sub trim
 {
