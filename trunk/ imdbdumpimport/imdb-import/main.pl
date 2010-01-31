@@ -2,24 +2,21 @@ use strict;
 use warnings;
 BEGIN {
 	unshift (@INC,".");
-	foreach my $l (@INC){
-		print $l."\n";
-	}
 }
-
-
 use lib::processor("init","process","destroy");
 #imports for imdb handlers.
 use imdb::actors;
+use imdb::actresses;
 use imdb::movies;
 use Getopt::Std;
+
+
 sub process_main{
 
 	# Parse the command line options.
 	our ($opt_c, $opt_u, $opt_p,$opt_d, $opt_e);
 	getopt("cupde");
 
-#	
 	if (!$opt_c){
 		$opt_c = "DBI:mysql:imdb2:localhost";
 		$opt_u = "imdb2";
@@ -50,6 +47,7 @@ sub process_main{
 }
 
 process_main;
+1;
 
 
 
