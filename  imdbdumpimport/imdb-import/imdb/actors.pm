@@ -1,16 +1,11 @@
-package actors;
+package imdb::actors;
 
 BEGIN {
 	unshift( @INC, "../" );
 	
 }
 
-use Exporter;
-our @ISA = qw(Exporter);
-
-our @EXPORT_OK = qw(new is_parse_ready is_store_ready parse print_info set_context store);
-
-use lib::IMDBUtil( 'trim', 'debug' );
+use lib::IMDBUtil;
 
 our $context;
 our %actor;
@@ -30,7 +25,7 @@ my $u = 0;
 sub new {
 
 	# dummy object
-	my $obj = { "l" => "f" };
+	my $obj = { "l" => "ACTOR"};
 	bless $obj, shift;
 	return $obj;
 }
