@@ -1,6 +1,7 @@
 use strict;
 use warnings;
 
+use lib::IMDBUtil;
 sub test_assign {
 	my ( $a, $b, $c ) = ( "a", "", " " );
 	if ($a) {
@@ -46,78 +47,7 @@ sub test_pass_ref {
 	}
 }
 
-sub print_r {
-	use Switch;
-	my $ref = shift;
-	my $level = shift;
-	
-	sub pr_level {
-		print "  " x shift,shift;
-	}
-	
-	if (!defined($level)){
-		$level =0;
-	}
-	
-	my $type = ref($ref);
-	if (!$type){
-		$type = "VAL";
-	}
-	
-	if (!$ref){
-		$type = "UNDEF";
-	}
-	
-	
-	switch($type){
-		case "UNDEF"{
-			print "undef";
-		}
-		case "HASH"    {
-			pr_level(0, "HASH\n");
-			pr_level($level,"(\n");
-			$level++;
-			foreach my $k (sort keys %$ref){
-				pr_level($level,"[$k] => ");
-				print_r($$ref{$k},$level+1);
-				print "\n";
-			}
-			$level--;
-			pr_level( $level,")");
-			
-		}
-		case "ARRAY"   {
-			pr_level(0, "ARRAY\n");
-			pr_level($level,"(\n");
-			$level++;
-			my $i = 0;
-			foreach my $k (@$ref){
-				pr_level($level, "[$i] => ");
-				print_r($k,$level+1);
-				print "\n";
-				$i++;
-			}
-			$level--;
-			pr_level( $level,")");
-			
-		}
-		case "SCALAR"  {
-			print scalar $$ref;
-		}
-		case "VAL"  {
-			if ($ref){
-				print $ref;
-			}
-		}
-		
-		else{
-			print "not handled: ",$type,"---> ",$ref,"\n";
-		}
-	}
-	
-	
-	
-}
+
 sub test_oper {
 	my $i = 100;
 	if ($i%11 == 0){
@@ -131,7 +61,53 @@ sub test_ml{
 	print $b;
 	
 }
-#my %h = test_array;
-#print "\n=============================================================================\n";
-#print_r(\%h);
-test_ml;
+sub test_shift {
+	my @arr = ('a','b','c');
+	print_r(\@arr);
+	print shift @arr,"\n";
+	print_r(\@arr);
+	print shift @arr,"\n";
+	print_r(\@arr);
+	print shift @arr,"\n";
+	print_r(\@arr);
+	my ($a,$b) = @arr; 
+	if ($a && $a eq 'd'){
+		print "\n\n hhhhh";
+	}
+	
+}
+
+sub test_case {
+	my $l = "8: THE GENRES LiST";
+	if ($l =~ m/THE GENRES LIST/){
+		print "aaargh";
+	}
+}
+
+sub test_wb{
+	my $line = "      ....001213      52   8.2  \"Avatar: The Last Airbender\" (2005) {Appa's Lost Days (#2.16)}";
+	
+	my ($distribution,$num_votes,$rating,$rest);
+	if ($line =~ m/\s+([\w.]+)\s/gc){
+		$distribution = t($1);
+	}
+	if ($line =~ m/\G\s+\b([\d]+)\b/gc){
+		$num_votes = t($1);
+	}
+	if ($line =~ m/\G\s+\b([\d.]+)\b/gc){
+		$rating = t($1);
+	}
+	
+	if ($line =~ m/\G(.+)/gc){
+		$rest = t($1);
+	}
+	my %ret = lib::IMDBUtil::parse_movie_info($rest);
+	if ($ret{type}){
+		$ret{distribution} = $distribution;
+		$ret{num_votes} = $num_votes;
+		$ret{rating} = $rating;
+	}
+	print_r(\%ret);	
+	
+}
+test_wb;

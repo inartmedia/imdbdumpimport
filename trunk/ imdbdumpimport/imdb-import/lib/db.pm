@@ -1,7 +1,43 @@
 package lib::db;
-
-#use strict;
+use strict;
 use warnings;
+BEGIN {
+	unshift( @INC, "../" );
+}
+our @EXPORT = ('disconnect_from_database','execute_sql','connect_to_database','commit','insert');
+
+our $impl;
+
+sub init{
+	my $class = shift;
+	$impl = $class->new;
+}
+
+# Connect to the database
+sub connect_to_database {
+	$impl->connect_to_database (@_);
+}
+
+sub commit{
+	$impl->commit;
+}
+
+#disconnect from the database
+sub disconnect_from_database {
+	$impl->disconnect();
+}
+#execute a statement, return the executed statement.
+sub execute_sql {
+	return $impl->execute_sql(@_);
+}
+
+sub insert {
+	return $impl->insert(@_);
+}
+
+
+# MySQL implementation of database connection.
+package lib::MySQLDB;
 BEGIN {
 	unshift( @INC, "../" );
 }
@@ -10,12 +46,18 @@ use lib::IMDBUtil;
 use DBI;
 use DBI qw(:sql_types);
 
-our @EXPORT = ('disconnect_from_database','execute_sql','connect_to_database','commit','insert');
-
 our $conn;
+
+sub new {
+	my $class = shift;
+	my $obj = { context => undef };
+	bless $obj, $class;
+	return $obj;
+}
 
 # Connect to the database
 sub connect_to_database {
+	shift;
 	my ($connStr,$u,$p) = @_;
 	$conn = DBI->connect( $connStr, $u, $p ,{AutoCommit => 0}) or die ;
 }
@@ -30,11 +72,9 @@ sub disconnect_from_database {
 }
 #execute a statement, return the executed statement.
 sub execute_sql {
+	shift;
 	my $sql = shift;
 	my @params = @_;
-	
-	
-	
 	my $stm = $conn->prepare($sql);
 	my $i=1;
 	foreach my $p (@params){
@@ -47,6 +87,7 @@ sub execute_sql {
 }
 
 sub insert {
+	shift;
 	my $sql = shift;
 	my @params = @_;
 		
@@ -65,6 +106,5 @@ sub insert {
 	$stm->execute or die " cannot execute sql : ".$sql."with params : ".join(" -*- ",@params);
 	
 	return $conn->{ q{mysql_insertid}};
-	
 }
 1;
