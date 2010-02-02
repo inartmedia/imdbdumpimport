@@ -8,9 +8,12 @@ use lib::processor("init","process","destroy");
 use imdb::actors;
 use imdb::actresses;
 use imdb::movies;
+use imdb::cache;
+use imdb::ratings;
+use imdb::genres;
+use imdb::language;
+
 use Getopt::Std;
-
-
 sub process_main{
 
 	# Parse the command line options.
@@ -31,10 +34,19 @@ sub process_main{
 	}
 	print "d=$opt_d,u=$opt_u,p=$opt_p,e=$opt_e,c=$opt_c \n";
 	
+	my $has_movie ;
+	foreach (split(/,/,$opt_e)){
+		if (!$has_movie && $_ eq 'movies'){
+			$has_movie = 1;	
+		}
+	}
+	
 	# TODO :- fail gracefully if all required options are not provided.
 	
 	lib::processor::init($opt_c, $opt_u, $opt_p);
-	
+	if (!$has_movie){
+		imdb::cache::load();
+	}
 	my @imports =  split(/,/,$opt_e);
 	
 	foreach my $imp (@imports){
