@@ -1,7 +1,7 @@
-use strict;
 use warnings;
 
 use lib::IMDBUtil;
+
 sub test_assign {
 	my ( $a, $b, $c ) = ( "a", "", " " );
 	if ($a) {
@@ -22,21 +22,21 @@ sub test_array {
 	push( @{ $hash{c} }, 'c' );
 
 	push( @arr, 'j' );
-	
-	push (@arr,"");
-	my @a2 = ("a" ,"b", "c");
-	my %h2 = (a1 =>"a1",a2 =>\@a2);
-	
-	push(@{$hash{c}},\%h2);
 
-	print_r(\%hash);
-	
+	push( @arr, "" );
+	my @a2 = ( "a", "b", "c" );
+	my %h2 = ( a1 => "a1", a2 => \@a2 );
+
+	push( @{ $hash{c} }, \%h2 );
+
+	print_r( \%hash );
+
 	return %hash;
 
 }
 
 sub test_pass_ref {
-	
+
 	my $ref = shift;
 	print $ref, "\n";
 	if ( ref($ref) eq 'HASH' ) {
@@ -47,67 +47,101 @@ sub test_pass_ref {
 	}
 }
 
-
 sub test_oper {
 	my $i = 100;
-	if ($i%11 == 0){
+	if ( $i % 11 == 0 ) {
 		print "aha";
 	}
 }
 
-sub test_ml{
-	my $a  =1;
-	my $b = ($a == 1? "0":"1");
+sub test_ml {
+	my $a = 1;
+	my $b = ( $a == 1 ? "0" : "1" );
 	print $b;
-	
+
 }
+
 sub test_shift {
-	my @arr = ('a','b','c');
-	print_r(\@arr);
-	print shift @arr,"\n";
-	print_r(\@arr);
-	print shift @arr,"\n";
-	print_r(\@arr);
-	print shift @arr,"\n";
-	print_r(\@arr);
-	my ($a,$b) = @arr; 
-	if ($a && $a eq 'd'){
+	my @arr = ( 'a', 'b', 'c' );
+	print_r( \@arr );
+	print shift @arr, "\n";
+	print_r( \@arr );
+	print shift @arr, "\n";
+	print_r( \@arr );
+	print shift @arr, "\n";
+	print_r( \@arr );
+	my ( $a, $b ) = @arr;
+
+	if ( $a && $a eq 'd' ) {
 		print "\n\n hhhhh";
 	}
-	
+
 }
 
 sub test_case {
 	my $l = "8: THE GENRES LiST";
-	if ($l =~ m/THE GENRES LIST/){
+	if ( $l =~ m/THE GENRES LIST/ ) {
 		print "aaargh";
 	}
 }
 
-sub test_wb{
-	my $line = "      ....001213      52   8.2  \"Avatar: The Last Airbender\" (2005) {Appa's Lost Days (#2.16)}";
-	
-	my ($distribution,$num_votes,$rating,$rest);
-	if ($line =~ m/\s+([\w.]+)\s/gc){
+sub test_wb {
+	my $line =
+"      ....001213      52   8.2  \"Avatar: The Last Airbender\" (2005) {Appa's Lost Days (#2.16)}";
+
+	my ( $distribution, $num_votes, $rating, $rest );
+	if ( $line =~ m/\s+([\w.]+)\s/gc ) {
 		$distribution = t($1);
 	}
-	if ($line =~ m/\G\s+\b([\d]+)\b/gc){
+	if ( $line =~ m/\G\s+\b([\d]+)\b/gc ) {
 		$num_votes = t($1);
 	}
-	if ($line =~ m/\G\s+\b([\d.]+)\b/gc){
+	if ( $line =~ m/\G\s+\b([\d.]+)\b/gc ) {
 		$rating = t($1);
 	}
-	
-	if ($line =~ m/\G(.+)/gc){
+
+	if ( $line =~ m/\G(.+)/gc ) {
 		$rest = t($1);
 	}
 	my %ret = lib::IMDBUtil::parse_movie_info($rest);
-	if ($ret{type}){
+	if ( $ret{type} ) {
 		$ret{distribution} = $distribution;
-		$ret{num_votes} = $num_votes;
-		$ret{rating} = $rating;
+		$ret{num_votes}    = $num_votes;
+		$ret{rating}       = $rating;
 	}
-	print_r(\%ret);	
-	
+	print_r( \%ret );
+
 }
-test_wb;
+
+sub test_actor {
+	my $line1 =
+	  "Stuck in the Middle (2003) (V)  (archive footage)  [Themselves] <20>";
+	my $line2 = "Nyhetsåret 2003 (2003) (TV)  (archive footage)  [Prime Minister of Palestine (2003)]";
+	my $line3 = "\"Rock Concert\" (1973) {(#3.21)}  [Themselves]";
+
+	my %movie = lib::IMDBUtil::parse_movie_info($line2);
+	my $rest  = $movie{unused};
+		if ($rest){
+			if ($rest =~ m/^\((.*?)\)/gc){
+				$movie{notes} =$1;
+				$p=1;
+			}
+			if ($rest =~ m/\G\s*\[(.+)\]/gc){
+				$movie{role}=$1;
+				$p=1;
+			}
+			if ($rest =~ m/<(.+)>/){
+				$movie{credit_no} = $1;
+				$p=1;
+			}
+		}
+		  	
+		if ($rest && !$p) {
+			debug($rest);
+		}
+	
+	return %movie;
+
+}
+my %m = test_actor;
+print_r(\%m);

@@ -1,5 +1,7 @@
 package imdb::actors;
 
+use strict;
+use warnings;
 BEGIN {
 	unshift( @INC, "../" );
 	
@@ -7,11 +9,8 @@ BEGIN {
 
 use lib::IMDBUtil;
 
-our $context;
 our %actor;
-our @credits = 0;
-
-our $is_store = 0;
+#our $is_store = 0;
 
 # keep an indicator for last two lines.
 # to detect begin of a parse.
@@ -45,26 +44,24 @@ sub is_parse_ready {
 }
 
 sub is_store_ready {
-	return $is_store;
+	shift;
+	my $o = shift;
+	return $o;
 }
 
 sub parse {
 	shift;
 	my $line = shift;
+	my $line_id = shift;
 
-	my %ret = ( type => $context );
+	my %ret;
 
 	if ( !is_parse_ready() ) {
 		$line1 = $line2;
 		$line2 = $line;
 		return %ret;
 	}
-	elsif ( %actor && trim($line) eq "" ) {
-		$is_store       = 1;
-		$ret{'actor'}   = \%actor;
-		$ret{'credits'} = \@credits;
-		return %ret;
-	}
+	
 
 	my @frgs = split( /\t+/, $line );
 	my $character_part;
@@ -77,52 +74,67 @@ sub parse {
 	#parse the actor and store 'it'
 	my @actornames = split( /,/, $actor_str );
 	if ( scalar @actornames == 2 ) {
-		$actor = {
+		%actor = (
 			fullname => trim($actor_str),
 			fname    => trim( $actornames[1] ),
 			lname    => trim( $actornames[0] )
-		};
+		);
 	}
+	
+	
 
 	#parse the credit and store it in @credits array;
 	$i++;
 	if ($character_part) {
 		$character_part = trim($character_part);
-		if ( $character_part =~
-m/^(.+)\s+\([\d|?]{4}(\/.+)?\)(\s+\(([TVG]{1,2})\))?(\s+\[(.+)\])?(\s+\<(\d+)\>)?$/
-		  )
-		{
-			
+		my %movie = lib::IMDBUtil::parse_movie_info($character_part);
+		my $rest = t($movie{unused});
+		
+		my $p =0;
+		
+		if ($rest){
+			if ($rest =~ m/^\((.*?)\)/gc){
+				$movie{notes} =$1;
+				$p=1;
+			}
+			if ($rest =~ m/\G\s*\[(.+)\]/gc){
+				$movie{role}=$1;
+				$p=1;
+			}
+			if ($rest =~ m/<(.+)>/){
+				$movie{credit_no} = $1;
+				$p=1;
+			}
 		}
-		elsif ($character_part =~ m/^\"(.+)\"\s+\([\d|?]{4}(\/.+)?\)\s+\{(.+)\}(\s+\((.+)\))?\s+\[(.+)\](\s+\<(\d+)\>)?$/){
-			
+		  	
+		if ($rest && !$p) {
+			debug($rest,$line_id);
 		}
-		else {
-			$u++;
-			debug($character_part);
-		}
+		
+		$ret{role} = \%movie;
+		$ret{actor}=\%actor;
 	}
+	
+	
 	return %ret;
 
 }
 
 sub store {
-
+	shift;
 	# reset state
-	$is_store = 0;
-	undef($actor);
-	undef($credits);
+	#print_r(shift);
+	
 }
 
 sub set_context {
 	print "ACTOR\n";
-	$context = shift;
 
 }
 
 # debugging helper methods, to be deleted once everything is finished.
 sub how_many_lines {
-	return 10;
+	return -1;
 }
 
 sub print_info {
