@@ -44,50 +44,7 @@ sub parse {
 }
 
 sub store {
-	my $ref = shift;
-
-	if ( !$$ref{type} ) {
-		print_r($ref);
-		return;
-	}
-
-	my $id = imdb::cache::get_language( $$ref{language} );
-	if ( $id == -1 ) {
-		my $lsql   = "insert into language(name) values(?)";
-		my @lparam = ( $$ref{language} );
-		$id = db::insert( $lsql, @lparam );
-		imdb::cache::add( $$ref{language}, $id );
-	}
-
-	if ( $$ref{type} ) {
-		if ( $$ref{type} eq "movie" ) {
-			my $mid = imdb::cache::get_movie( $$ref{title}, $$ref{year} );
-			my $mlsql =
-			  "insert into movie_language(mid,lid,notes) values (?,?,?)";
-			my @mparams = ( $mid, $id, $$ref{language_notes} );
-			lib::db::insert( $mlsql, @mparams );
-		}
-		else {
-			if ( $$ref{episode} ) {
-				my $sid = imdb::cache::get_show( $$ref{title}, $$ref{year} );
-				my $episode = $$ref{episode};
-				my $eid =
-				  imdb::cache::get_episode( $sid, $$episode{title},
-					$$episode{season}, $$episode{episode_num} );
-				my $esql =
-				  "insert into episode_language(eid,lid,notes) values (?,?,?)";
-				my @eparams = ( $eid, $id, $$ref{language_notes} );
-				lib::db::insert( $esql, @eparams );
-			}
-			else {
-				my $sid = imdb::cache::get_show( $$ref{title}, $$ref{year} );
-				my $ssql =
-				  "insert into show_language(sid,lid,notes) values(?,?,?)";
-				my @sparam = ( $sid, $id, $$ref{language_notes} );
-				lib::db::insert( $ssql, @sparam );
-			}
-		}
-	}
+	shift;
 }
 
 sub new {

@@ -24,7 +24,7 @@ sub commit{
 
 #disconnect from the database
 sub disconnect_from_database {
-	$impl->disconnect();
+	$impl->disconnect_from_database();
 }
 #execute a statement, return the executed statement.
 sub execute_sql {

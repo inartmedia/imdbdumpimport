@@ -1,9 +1,12 @@
 use strict;
 use warnings;
+
 BEGIN {
-	unshift (@INC,".");
+	unshift( @INC, "." );
 }
-use lib::processor("init","process","destroy");
+use lib::processor( "init", "process", "destroy" );
+use lib::param;
+
 #imports for imdb handlers.
 use imdb::actors;
 use imdb::actresses;
@@ -13,53 +16,34 @@ use imdb::ratings;
 use imdb::genres;
 use imdb::language;
 
-use Getopt::Std;
-sub process_main{
+sub process_main {
+	
+	my $param_file = shift;
+	
+	if (!$param_file){
+		$param_file = "import.params";
+	}
 
-	# Parse the command line options.
-	our ($opt_c, $opt_u, $opt_p,$opt_d, $opt_e);
-	getopt("cupde");
+	lib::param::init($param_file);
 
-	if (!$opt_c){
-		$opt_c = "DBI:mysql:imdb2:localhost";
-		$opt_u = "imdb2";
-		$opt_p = "imdb2";
-	}
-	if (!$opt_d){
-		$opt_d = "data";
-	}
-	
-	if (!$opt_e){
-		$opt_e = 'movies,actors,languages,genres,ratings,actresses';
-	}
-	print "d=$opt_d,u=$opt_u,p=$opt_p,e=$opt_e,c=$opt_c \n";
-	
-	my $has_movie ;
-	foreach (split(/,/,$opt_e)){
-		if (!$has_movie && $_ eq 'movies'){
-			$has_movie = 1;	
-		}
-	}
-	
 	# TODO :- fail gracefully if all required options are not provided.
-	
-	lib::processor::init($opt_c, $opt_u, $opt_p);
-	if (!$has_movie){
-		imdb::cache::load();
+
+	lib::processor::init( get_param(DATABASE_URL), get_param(DATABASE_USER),
+		get_param(DATABASE_PWD) );
+	if ( !get_param(HAS_MOVIE) ) {
+		#imdb::cache::load();
 	}
-	my @imports =  split(/,/,$opt_e);
-	
-	foreach my $imp (@imports){
-		my $file = "$opt_d/$imp.list";
-		lib::processor::process($file,$imp,"imdb::$imp"->new());
+	my $imports = get_param(IMPORT_LIST);
+
+	foreach my $imp (@$imports) {
+		my $file = get_param(FOLDER) . "$imp.list";
+		lib::processor::process( $file, $imp, "imdb::$imp"->new() );
 	}
-	
+
 	lib::processor::destroy();
-	
+
 }
 
-process_main;
+process_main @ARGV;
 1;
-
-
 

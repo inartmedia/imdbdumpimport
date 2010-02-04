@@ -58,31 +58,8 @@ sub parse {
 }
 
 sub store {
-
-	if ( !$$ref{type} ) {
-		print_r($ref);
-		return;
-	}
-	my $id = imdb::cache::get_genre( $$ref{genre} );
-	if ( $id == -1 ) {
-		my $lsql   = "insert into genre(name) values(?)";
-		my @lparam = ( $$ref{genre} );
-		$id = db::insert( $lsql, @lparam );
-		imdb::cache::add( $$ref{genre}, $id );
-	}
-
-	if ( $$ref{type} eq "movie" ) {
-		my $mid     = imdb::cache::get_movie( $$ref{title}, $$ref{year} );
-		my $mlsql   = "insert into movie_genre(mid,gid) values (?,?)";
-		my @mparams = ( $mid, $id );
-		lib::db::insert( $mlsql, @mparams );
-	}
-	else {
-		my $sid    = imdb::cache::get_show( $$ref{title}, $$ref{year} );
-		my $ssql   = "insert into show_genre(sid,gid) values(?,?)";
-		my @sparam = ( $sid, $id );
-		lib::db::insert( $ssql, @sparam );
-	}
+	shift;
+	
 }
 
 # debugging helper methods, to be deleted once everything is finished.

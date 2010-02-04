@@ -127,9 +127,10 @@ sub parse_movie_info {
 	my $line    = shift;
 	my $line_id = shift;
 	my %ret;
+	my $unused;
 	if ( $line !~ m/^["]/ ) {
 		
-		if ( $line =~ m/^(.+)\(([\d|?]{4})(\/[IVX]{1,5})?\)/g ) {
+		if ( $line =~ m/^(.*?)\(([\d|?]{4})(\/[IVX]{1,5})?\)/g ) {
 			my ( $title, $year_start, $tv, $suspended );
 			$title      = t($1);
 			$year_start = t($2);
@@ -151,7 +152,7 @@ sub parse_movie_info {
 			if ( $line =~ m/\G(.+)/gc ) {
 				my $rep = trim($1);
 				if ( $rep ne "" ) {
-					debug( $rep, $line_id );
+					$unused = $rep;
 				}
 
 			}
@@ -167,7 +168,7 @@ sub parse_movie_info {
 
 	}
 	elsif ( $line =~
-		m/^\"(.+)\"\s+\(([\d|?]{4})(\/[IVX]{1,5})?\)(\s+\{([^{]+)\})?/g )
+		m/^\"(.*?)\"\s+\(([\d|?]{4})(\/[IVX]{1,5})?\)(\s+\{([^{]+)\})?/g )
 	{
 		my ( $show, $year, $episode, $notes, $ep_times, $ep_season, $ep_num,
 			$suspended );
@@ -194,7 +195,7 @@ sub parse_movie_info {
 		if ( $line =~ m/\G(.+)/gc ) {
 			my $rep = trim($1);
 			if ( $rep ne "" ) {
-				debug( $rep, $line_id );
+				$unused = $rep;
 			}
 		}
 
@@ -221,7 +222,11 @@ sub parse_movie_info {
 		#debug($line);
 
 	}
-
+	
+	if ($ret{type}){
+		$ret{unused} = $unused;
+	}
+	
 	return %ret;
 }
 1;

@@ -10,6 +10,7 @@ BEGIN {
 use lib::file('open_file','close_file','next_line');
 use lib::db;
 use lib::Log; 
+use lib::param;
 use imdb::cache;
 use lib::IMDBUtil;
 use Exporter;
@@ -18,9 +19,8 @@ our @EXPORT_OK = ('process','init','destroy');
 our $init = 0;
 
 sub init {
-	my ($db,$log,$unp) = ("lib::MySQLDB","log/logfile.log","log/unprocessed.log");
-	lib::db::init($db);
-	lib::Log::init($log,$unp);
+	lib::db::init(get_param(DATABASE_HANDLER));
+	lib::Log::init(get_param(LOGFILE),get_param(UNP_FILE));
 	lib::db::connect_to_database(@_);
 	$init = 1;
 	
