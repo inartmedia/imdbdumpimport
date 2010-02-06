@@ -13,6 +13,7 @@ use lib::Log;
 use lib::param;
 use imdb::cache;
 use lib::IMDBUtil;
+use imdb::StoreHandler;
 use Exporter;
 our @ISA= ('Exporter');
 our @EXPORT_OK = ('process','init','destroy');
@@ -20,6 +21,7 @@ our $init = 0;
 
 sub init {
 	lib::db::init(get_param(DATABASE_HANDLER));
+	imdb::StoreHandler::init(get_param(STORE_HANDLER)); 
 	lib::Log::init(get_param(LOGFILE),get_param(UNP_FILE));
 	lib::db::connect_to_database(@_);
 	$init = 1;

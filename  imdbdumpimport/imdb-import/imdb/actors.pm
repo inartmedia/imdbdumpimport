@@ -8,7 +8,7 @@ BEGIN {
 }
 
 use lib::IMDBUtil;
-
+use imdb::StoreHandler;
 our %actor;
 #our $is_store = 0;
 
@@ -50,7 +50,7 @@ sub is_store_ready {
 }
 
 sub parse {
-	shift;
+	my $class = shift;
 	my $line = shift;
 	my $line_id = shift;
 
@@ -79,6 +79,15 @@ sub parse {
 			fname    => trim( $actornames[1] ),
 			lname    => trim( $actornames[0] )
 		);
+		
+		$actor{type} = "actor";
+		
+		if ($$class{l} eq "ACTOR"){
+			$actor{gender}= 'M';
+		}
+		else {
+			$actor{gender}= 'F';
+		}
 	}
 	
 	
@@ -110,7 +119,7 @@ sub parse {
 		if ($rest && !$p) {
 			debug($rest,$line_id);
 		}
-		
+		$ret{type} = "actorfull";
 		$ret{role} = \%movie;
 		$ret{actor}=\%actor;
 	}
@@ -124,12 +133,11 @@ sub store {
 	shift;
 	# reset state
 	#print_r(shift);
+	store_actor(shift);
 	
 }
 
 sub set_context {
-	print "ACTOR\n";
-
 }
 
 # debugging helper methods, to be deleted once everything is finished.
