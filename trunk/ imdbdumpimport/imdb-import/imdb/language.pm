@@ -1,10 +1,12 @@
 package imdb::language;
 
+use strict;
+use warnings;
 BEGIN {
 	unshift( @INC, "../" );
 
 }
-
+use imdb::StoreHandler;
 use lib::IMDBUtil;
 use imdb::cache;
 our $i        = 0;
@@ -27,7 +29,7 @@ sub parse {
 	my %ret;
 	if ( $#line_frgs + 1 >= 2 ) {
 		%ret       = lib::IMDBUtil::parse_movie_info( shift @line_frgs );
-		$lang_part = t( shift(@line_frgs) );
+		my $lang_part = t( shift(@line_frgs) );
 		my ( $lang, $lang_notes );
 		if ( $lang_part && $lang_part =~ m/(\w+)\s+(\((.+)\))?/ ) {
 			$lang       = t($1);
@@ -45,6 +47,7 @@ sub parse {
 
 sub store {
 	shift;
+	store_language(shift);
 }
 
 sub new {
@@ -76,6 +79,5 @@ sub print_info {
 }
 
 sub set_context {
-
 }
 1;

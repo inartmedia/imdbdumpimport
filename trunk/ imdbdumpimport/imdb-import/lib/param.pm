@@ -9,7 +9,7 @@ BEGIN {
 use Exporter;
 our @ISA = qw(Exporter);
 our @EXPORT =
-  qw (get_param DATABASE_URL DATABASE_USER DATABASE_PWD DATABASE_HANDLER IMPORT_LIST LOGFILE FOLDER UNP_FILE HAS_MOVIE);
+  qw (get_param DATABASE_URL DATABASE_USER DATABASE_PWD DATABASE_HANDLER IMPORT_LIST LOGFILE FOLDER UNP_FILE HAS_MOVIE STORE_HANDLER);
 
 use constant DATABASE_URL     => "database.url";
 use constant DATABASE_USER    => "database.user";
@@ -20,6 +20,7 @@ use constant LOGFILE          => "log.logfile";
 use constant UNP_FILE         => "log.unprocessed";
 use constant FOLDER           => "data.folder";
 use constant HAS_MOVIE        => "has.movie";
+use constant STORE_HANDLER    => "database.storageHandler";
 
 use lib::file( 'open_file', 'close_file', 'next_line' );
 use lib::IMDBUtil;

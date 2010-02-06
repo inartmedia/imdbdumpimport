@@ -1,5 +1,8 @@
 package imdb::genres;
 
+use strict;
+use warnings;
+
 BEGIN {
 	unshift( @INC, "../" );
 
@@ -7,7 +10,7 @@ BEGIN {
 
 use lib::IMDBUtil;
 use imdb::cache;
-
+use imdb::StoreHandler;
 our $begun = 0;
 
 our $line;
@@ -59,6 +62,7 @@ sub parse {
 
 sub store {
 	shift;
+	store_genre(shift);
 	
 }
 
@@ -71,6 +75,5 @@ sub print_info {
 }
 
 sub set_context {
-
 }
 1;

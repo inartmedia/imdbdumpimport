@@ -12,20 +12,27 @@ use Exporter;
 our @ISA       = qw(Exporter);
 our @EXPORT_OK = qw(add get);
 
-use constant NOT_PRESENT => -1;
+use constant NOT_PRESENT => 0;
 use Switch;
 our %movies;
 our %shows;
 our %language;
 our %genre;
 our %episodes;    #{sid}{episode title}{season}{episode#}
+our %actors; # {gender}fullname}
 
 # Implementation of a two level cache. Just holds movies and show titles indexed by year
 # Used to lookup FK values for shows and movies.
 # If year is not defined, use 1111 as key.
 sub add {
+	
+	
 	my $ref = shift;
 	my $id  = shift;
+	
+	if (!$$ref{type}){
+		return;
+	}
 
 	switch ( $$ref{type} ) {
 		case "movie" {
@@ -60,6 +67,9 @@ sub add {
 		}
 		case "language" {
 			$language{ $$ref{language} } = $id;
+		}
+		case "actor" {
+			$actors{$$ref{gender}}{$$ref{fullname}} = $id;
 		}
 	}
 }
@@ -138,5 +148,11 @@ sub get_episode {
 		$id = NOT_PRESENT;
 	}
 	return $id;
+}
+
+sub get_actor {
+	my ($fullname,$gender) = @_;
+	return $actors{$gender}{$fullname};
+	
 }
 1;

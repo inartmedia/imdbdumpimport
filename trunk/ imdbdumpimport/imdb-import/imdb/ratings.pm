@@ -7,6 +7,7 @@ BEGIN {
 }
 
 use lib::IMDBUtil;
+use imdb::StoreHandler;
 use lib::db;
 use imdb::cache;
 
@@ -54,9 +55,7 @@ sub parse {
 
 sub store {
 	shift;
-	print " HHHH ";
-	print_r(shift);
-
+	store_rating(shift);
 }
 
 

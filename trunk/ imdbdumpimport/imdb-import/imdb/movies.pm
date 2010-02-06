@@ -7,7 +7,7 @@ use constant SHOW  => 'show';
 BEGIN {
 	unshift( @INC, "../" );
 }
-
+use imdb::StoreHandler;
 use lib::IMDBUtil;
 use lib::db;
 use imdb::cache;
@@ -104,6 +104,8 @@ sub parse {
 
 sub store {
 	shift;
+	my $m = shift;
+	store_movie($m);
 	
 }
 
