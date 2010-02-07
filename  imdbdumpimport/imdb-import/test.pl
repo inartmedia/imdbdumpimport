@@ -116,29 +116,11 @@ sub test_wb {
 sub test_actor {
 	my $line1 =
 	  "Stuck in the Middle (2003) (V)  (archive footage)  [Themselves] <20>";
-	my $line2 = "Nyhetsåret 2003 (2003) (TV)  (archive footage)  [Prime Minister of Palestine (2003)]";
+	my $line2 = "\"10 Years Younger\" (2004/I)				2004";
 	my $line3 = "\"Rock Concert\" (1973) {(#3.21)}  [Themselves]";
 
 	my %movie = lib::IMDBUtil::parse_movie_info($line2);
-	my $rest  = $movie{unused};
-		if ($rest){
-			if ($rest =~ m/^\((.*?)\)/gc){
-				$movie{notes} =$1;
-				$p=1;
-			}
-			if ($rest =~ m/\G\s*\[(.+)\]/gc){
-				$movie{role}=$1;
-				$p=1;
-			}
-			if ($rest =~ m/<(.+)>/){
-				$movie{credit_no} = $1;
-				$p=1;
-			}
-		}
-		  	
-		if ($rest && !$p) {
-			debug($rest);
-		}
+	
 	
 	return %movie;
 

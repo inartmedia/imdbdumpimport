@@ -123,17 +123,18 @@ sub print_r {
 	}
 }
 
-sub parse_movie_info {
+sub parse_movie_info{
 	my $line    = shift;
 	my $line_id = shift;
 	my %ret;
 	my $unused;
 	if ( $line !~ m/^["]/ ) {
 		
-		if ( $line =~ m/^(.*?)\(([\d|?]{4})(\/[IVX]{1,5})?\)/g ) {
-			my ( $title, $year_start, $tv, $suspended );
+		if ( $line =~ m/^(.*?)\(([\d|?]{4})(\/([IVX]{1,5}))?\)/g ) {
+			my ( $title, $year_start, $tv, $suspended ,$year_suffix);
 			$title      = t($1);
 			$year_start = t($2);
+			$year_suffix  = t($4);
 			$suspended  = 0;
 			$tv         = "";
 
@@ -163,17 +164,19 @@ sub parse_movie_info {
 				  ( $year_start && $year_start ne "????" ? $year_start : "0" );
 				$ret{vtype}     = $tv;
 				$ret{suspended} = $suspended;
+				$ret{year_suffix}= $year_suffix;
 			}
 		}
 
 	}
 	elsif ( $line =~
-		m/^\"(.*?)\"\s+\(([\d|?]{4})(\/[IVX]{1,5})?\)(\s+\{([^{]+)\})?/g )
+		m/^\"(.*?)\"\s+\(([\d|?]{4})(\/([IVX]{1,5}))?\)(\s+\{([^{]+)\})?/g )
 	{
-		my ( $show, $year, $episode, $notes, $ep_times, $ep_season, $ep_num,
+		my ( $show, $year, $episode, $notes, $ep_times, $ep_season, $ep_num,$year_suffix,
 			$suspended );
 		$show    = t($1);
 		$year    = t($2);
+		$year_suffix = t($4);
 		$episode = t($5);
 		if ($episode) {
 			if ( $episode =~ m/(.+)?\(\#(\d+)\.(\d+)\)/ ) {
@@ -202,6 +205,7 @@ sub parse_movie_info {
 		#my $show_ref = $shows{$show};
 		$ret{type}  = "show";
 		$ret{title} = $show;
+		$ret{year_suffix} = $year_suffix;
 		$ret{year}  = ( $year && $year ne "????" ? $year : "0" );
 		if ($episode) {
 			my %episode_hash = (

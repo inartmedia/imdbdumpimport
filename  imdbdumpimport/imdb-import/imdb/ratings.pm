@@ -21,7 +21,12 @@ sub new {
 }
 
 sub is_store_ready {
-	return $begun;
+	shift;
+	my $r = shift;
+	if ($r){
+		return 1;
+	}
+	return 0;
 }
 
 sub parse {
@@ -55,7 +60,8 @@ sub parse {
 
 sub store {
 	shift;
-	store_rating(shift);
+	my $r = shift;
+	store_rating($r);
 }
 
 
