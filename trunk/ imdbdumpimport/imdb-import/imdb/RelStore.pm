@@ -7,9 +7,6 @@ BEGIN {
 	unshift( @INC, "../" );
 }
 
-use Exporter;
-our @ISA    = qw(Exporter);
-our @EXPORT = ();
 
 use lib::db;
 use lib::IMDBUtil;
@@ -45,15 +42,19 @@ sub store_actor {
 	# save movie info.
 	my $movie = $$ref{movie};
 	if ( $$movie{type} eq "movie" ) {
-		my $mid = imdb::cache::get_movie( $$movie{title}, $$movie{year} );
+		my $mid =
+		  imdb::cache::get_movie( $$movie{title}, $$movie{year},
+			$$ref{year_suffix} );
 		my $sql =
 "insert into cast_movie(aid,mid,role,notes,credit_no) values (?,?,?,?,?)";
 		lib::db::insert( $sql, $aid, $mid, $$movie{role}, $$movie{notes},
 			$$movie{credit_no} );
 	}
-	else {
+	elsif ( $$movie{type} eq "show" ) {
 		if ( $$movie{episode} ) {
-			my $sid = imdb::cache::get_show( $$movie{title}, $$movie{year} );
+			my $sid =
+			  imdb::cache::get_show( $$movie{title}, $$movie{year},
+				$$ref{year_suffix} );
 			my $episode = $$movie{episode};
 			my $eid =
 			  imdb::cache::get_episode( $sid, $$episode{title},
@@ -64,7 +65,9 @@ sub store_actor {
 				$$movie{credit_no} );
 		}
 		else {
-			my $sid = imdb::cache::get_show( $$movie{title}, $$movie{year} );
+			my $sid =
+			  imdb::cache::get_show( $$movie{title}, $$movie{year},
+				$$ref{year_suffix} );
 			my $sql =
 "insert into cast_show(aid,sid,role,notes,credit_no) values (?,?,?,?,?)";
 			lib::db::insert( $sql, $aid, $sid, $$movie{role}, $$movie{notes},
@@ -87,7 +90,7 @@ sub store_genre {
 		return;
 	}
 	my $id = imdb::cache::get_genre( $$ref{genre} );
-	if ( $id == -1 ) {
+	if ( !$id ) {
 		my $lsql   = "insert into genre(name) values(?)";
 		my @lparam = ( $$ref{genre} );
 		$id = db::insert( $lsql, @lparam );
@@ -95,14 +98,18 @@ sub store_genre {
 	}
 
 	if ( $$ref{type} eq "movie" ) {
-		my $mid     = imdb::cache::get_movie( $$ref{title}, $$ref{year} );
-		my $mlsql   = "insert into movie_genre(mid,gid) values (?,?)";
+		my $mid =
+		  imdb::cache::get_movie( $$ref{title}, $$ref{year},
+			$$ref{year_suffix} );
+		my $mlsql = "insert into movie_genre(mid,gid) values (?,?)";
 		my @mparams = ( $mid, $id );
 		lib::db::insert( $mlsql, @mparams );
 	}
 	else {
-		my $sid    = imdb::cache::get_show( $$ref{title}, $$ref{year} );
-		my $ssql   = "insert into show_genre(sid,gid) values(?,?)";
+		my $sid =
+		  imdb::cache::get_show( $$ref{title}, $$ref{year},
+			$$ref{year_suffix} );
+		my $ssql = "insert into show_genre(sid,gid) values(?,?)";
 		my @sparam = ( $sid, $id );
 		lib::db::insert( $ssql, @sparam );
 	}
@@ -119,7 +126,7 @@ sub store_language {
 	}
 
 	my $id = imdb::cache::get_language( $$ref{language} );
-	if ( $id == -1 ) {
+	if ( !$id ) {
 		my $lsql   = "insert into language(name) values(?)";
 		my @lparam = ( $$ref{language} );
 		$id = db::insert( $lsql, @lparam );
@@ -128,7 +135,9 @@ sub store_language {
 
 	if ( $$ref{type} ) {
 		if ( $$ref{type} eq "movie" ) {
-			my $mid = imdb::cache::get_movie( $$ref{title}, $$ref{year} );
+			my $mid =
+			  imdb::cache::get_movie( $$ref{title}, $$ref{year},
+				$$ref{year_suffix} );
 			my $mlsql =
 			  "insert into movie_language(mid,lid,notes) values (?,?,?)";
 			my @mparams = ( $mid, $id, $$ref{language_notes} );
@@ -136,7 +145,9 @@ sub store_language {
 		}
 		else {
 			if ( $$ref{episode} ) {
-				my $sid = imdb::cache::get_show( $$ref{title}, $$ref{year} );
+				my $sid =
+				  imdb::cache::get_show( $$ref{title}, $$ref{year},
+					$$ref{year_suffix} );
 				my $episode = $$ref{episode};
 				my $eid =
 				  imdb::cache::get_episode( $sid, $$episode{title},
@@ -147,7 +158,9 @@ sub store_language {
 				lib::db::insert( $esql, @eparams );
 			}
 			else {
-				my $sid = imdb::cache::get_show( $$ref{title}, $$ref{year} );
+				my $sid =
+				  imdb::cache::get_show( $$ref{title}, $$ref{year},
+					$$ref{year_suffix} );
 				my $ssql =
 				  "insert into show_language(sid,lid,notes) values(?,?,?)";
 				my @sparam = ( $sid, $id, $$ref{language_notes} );
@@ -167,8 +180,6 @@ sub store_movie {
 	my $type = $obj{type};
 
 	if ( !$type ) {
-		print "[$lid] HHHH ";
-		print_r($mref);
 		return;
 	}
 
@@ -176,10 +187,10 @@ sub store_movie {
 
 		# save the movie
 		my $msql =
-"insert into movies (title,year,year_end,vtype,notes) values (?,?,?,?,?)";
+"insert into movies (title,year,year_end,vtype,notes,year_suffix) values (?,?,?,?,?,?)";
 		my @params = (
-			$$mref{title}, $$mref{year}, $$mref{year_end},
-			$$mref{vtype}, $$mref{notes}
+			$$mref{title}, $$mref{year}, $$mref{year_end}, $$mref{vtype},
+			$$mref{notes}, $$mref{year_suffix}
 		);
 
 		my $id = lib::db::insert( $msql, @params );
@@ -192,14 +203,15 @@ sub store_movie {
 		# if the episode is not included, save the show
 		my $sid = imdb::cache::get_show( $$mref{title}, $$mref{year} );
 		if ( !$sid ) {
-			my $ssql   = "insert into shows (title,year) values (?,?)";
-			my @params = ( $$mref{title}, $$mref{year} );
-			my $id     = lib::db::insert( $ssql, @params );
+			my $ssql =
+			  "insert into shows (title,year,year_suffix) values (?,?,?)";
+			my @params = ( $$mref{title}, $$mref{year}, $$mref{year_suffix} );
+			my $id = lib::db::insert( $ssql, @params );
 
 			# retain the reference for future use
 			imdb::cache::add( $mref, $id );
 		}
-		else {
+		elsif ( $$mref{episode} ) {
 			my $episode = $$mref{episode};
 
 			# save the episode, get the reference from $obj{show}
@@ -220,16 +232,29 @@ sub store_movie {
 sub store_rating {
 	shift;
 	my $movie = shift;
+	if ( !$movie ) {
+		return;
+	}
+	if ( !$$movie{type} ) {
+		return;
+	}
+
 	if ( $$movie{type} eq "movie" ) {
-		my $mid = imdb::cache::get_movie( $$movie{title}, $$movie{year} );
+
+		my $mid =
+		  imdb::cache::get_movie( $$movie{title}, $$movie{year},
+			$$movie{year_suffix} );
 		my $sql =
 "update movies set rating = ?, num_votes=?, distribution=? where mid = ?";
 		lib::db::execute_sql( $sql, $$movie{rating}, $$movie{num_votes},
 			$$movie{distribution}, $mid );
 	}
-	else {
+	elsif ( $$movie{type} eq "show" ) {
 		if ( $$movie{episode} ) {
-			my $sid = imdb::cache::get_show( $$movie{title}, $$movie{year} );
+
+			my $sid =
+			  imdb::cache::get_show( $$movie{title}, $$movie{year},
+				$$movie{year_suffix} );
 			my $episode = $$movie{episode};
 			my $eid =
 			  imdb::cache::get_episode( $sid, $$episode{title},
@@ -240,7 +265,9 @@ sub store_rating {
 				$$movie{distribution}, $eid );
 		}
 		else {
-			my $sid = imdb::cache::get_show( $$movie{title}, $$movie{year} );
+			my $sid =
+			  imdb::cache::get_show( $$movie{title}, $$movie{year},
+				$$movie{year_suffix} );
 			my $sql =
 "update shows set rating = ?, num_votes=?, distribution=? where sid = ?";
 			lib::db::execute_sql( $sql, $$movie{rating}, $$movie{num_votes},

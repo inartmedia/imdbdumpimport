@@ -31,7 +31,7 @@ sub process_main {
 	lib::processor::init( get_param(DATABASE_URL), get_param(DATABASE_USER),
 		get_param(DATABASE_PWD) );
 	if ( !get_param(HAS_MOVIE) ) {
-		#imdb::cache::load();
+		imdb::cache::load();
 	}
 	my $imports = get_param(IMPORT_LIST);
 
