@@ -54,7 +54,12 @@ sub debug {
 }
 
 # Perl equivalent of PHP print_r function
-sub print_r {
+sub print_r{
+	print_r_internal(@_);
+	print "\n";
+}
+
+sub print_r_internal {
 	use Switch;
 	my $ref   = shift;
 	my $level = shift;
@@ -170,14 +175,14 @@ sub parse_movie_info{
 
 	}
 	elsif ( $line =~
-		m/^\"(.*?)\"\s+\(([\d|?]{4})(\/([IVX]{1,5}))?\)(\s+\{([^{]+)\})?/g )
+		m/^\"(.*?)\"\s+\(([\d|?]{4})(\/([IVX]{1,5}))?\)(\s+(\{([^{]+)\}))?/g )
 	{
 		my ( $show, $year, $episode, $notes, $ep_times, $ep_season, $ep_num,$year_suffix,
 			$suspended );
 		$show    = t($1);
 		$year    = t($2);
 		$year_suffix = t($4);
-		$episode = t($5);
+		$episode = t($7);
 		if ($episode) {
 			if ( $episode =~ m/(.+)?\(\#(\d+)\.(\d+)\)/ ) {
 				if ( t($1) ) {

@@ -9,6 +9,7 @@ use Exporter;
 our @ISA    = qw(Exporter);
 our @EXPORT = qw(ERROR INFO DEBUG UNP);
 
+use lib::IMDBUtil;
 our $logfile;
 our $unpfile;
 
@@ -17,8 +18,8 @@ our $log;
 
 sub init {
 	( $logfile, $unpfile ) = @_;
-	open $log, ">>$logfile";
-	open $unp, ">>$unpfile";
+	open $log, ">$logfile";
+	open $unp, ">$unpfile";
 	my $start_str = logtime()." Started Processing...";
 	INFO("-----------------------------------------------------------------------");
 	INFO($start_str);
@@ -66,6 +67,7 @@ sub logtime{
 
 sub pt {
 	my ($type,$msg,$file,$line) = @_;
+	
 	my $str = "[$type] ".logtime().($line?"[$file: $line] ":"").$msg."\n";
 	print $log $str;
 }
