@@ -80,6 +80,9 @@ sub add {
 		case "actor" {
 			$actors{$$ref{gender}}{$$ref{fullname}} = $id;
 		}
+		else {
+			print "what are we adding here? \n"
+		}
 	}
 }
 
@@ -129,6 +132,7 @@ sub load {
 	while ( my @r = $show_ep->fetchrow_array ) {
 		
 		my ($sid,$t,$s,$e) = ($r[1],$r[2],($r[3]?$r[3]:1),($r[4]?$r[4]:1));
+				
 		$episodes{$sid}{$t}{$s}{$e} = $r[0];
 	}
 	
@@ -136,14 +140,15 @@ sub load {
 }
 
 sub get_language {
-	my $id = $language{shift};
-	$id = ( $id ? $id : NOT_PRESENT );
+	my ($l) = @_;
+	my $id = $language{$l};
+	
 	return $id;
 }
 
 sub get_genre {
-	my $id = $genre{shift};
-	$id = ( $id ? $id : NOT_PRESENT );
+	my ($l) = @_;
+	my $id = $genre{$l};
 	return $id;
 }
 
@@ -173,7 +178,9 @@ sub get_episode {
 	my ( $sid, $t, $s, $e ) = @_;
 	if ( !$s ) {
 		$s = 1;
-		$e = 1;
+	}
+	if (!$e){
+		$e =1;
 	}
 	my $id = $episodes{$sid}{$t}{$s}{$e};
 	if ( !$id ) {

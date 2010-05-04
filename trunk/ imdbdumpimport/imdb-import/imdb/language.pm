@@ -2,6 +2,7 @@ package imdb::language;
 
 use strict;
 use warnings;
+
 BEGIN {
 	unshift( @INC, "../" );
 
@@ -19,8 +20,7 @@ sub parse {
 	my $line_id = shift;
 
 	if ( !$is_ready ) {
-		if ( $#line_frgs == 0 && $line_frgs[0] =~ m/LANGUAGE LIST/ )
-		{
+		if ( $#line_frgs == 0 && $line_frgs[0] =~ m/LANGUAGE LIST/ ) {
 			$is_ready = 1;
 		}
 		return;
@@ -28,10 +28,10 @@ sub parse {
 
 	my %ret;
 	if ( $#line_frgs + 1 >= 2 ) {
-		%ret       = lib::IMDBUtil::parse_movie_info( shift @line_frgs );
+		%ret = lib::IMDBUtil::parse_movie_info( shift @line_frgs );
 		my $lang_part = t( shift(@line_frgs) );
 		my ( $lang, $lang_notes );
-		if ( $lang_part && $lang_part =~ m/(\w+)\s+(\((.+)\))?/ ) {
+		if ( $lang_part && $lang_part =~ m/(\w[\w\s]+)(\s+\((.+)\))?/ ) {
 			$lang       = t($1);
 			$lang_notes = t($3);
 		}
@@ -60,12 +60,9 @@ sub new {
 sub is_store_ready {
 	shift;
 	my $obj_ref = shift;
-	if ($is_ready && $obj_ref) {
-		if ( $$obj_ref{language} ) {
-			return 1;
-		}
+	if ( $$obj_ref{language} ) {
+		return 1;
 	}
-
 	return 0;
 }
 

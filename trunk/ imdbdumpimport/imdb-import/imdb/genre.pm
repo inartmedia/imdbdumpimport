@@ -1,4 +1,4 @@
-package imdb::genres;
+package imdb::genre;
 
 use strict;
 use warnings;

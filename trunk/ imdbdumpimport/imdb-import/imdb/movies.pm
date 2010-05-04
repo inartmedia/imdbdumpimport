@@ -11,6 +11,7 @@ use imdb::StoreHandler;
 use lib::IMDBUtil;
 use lib::db;
 use imdb::cache;
+use lib::Log;
 
 our $s   = 0;
 our $idx = 0;
@@ -96,6 +97,7 @@ sub parse {
 		}
 		else {
 			$begun = 0;
+			UNP("movies.list",$line_id,$line);
 		}
 	}
 
