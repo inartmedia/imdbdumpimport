@@ -132,7 +132,6 @@ sub parse {
 sub store {
 	shift;
 	# reset state
-	#print_r(shift);
 	store_actor(shift);
 	
 }
