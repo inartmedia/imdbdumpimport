@@ -80,7 +80,6 @@ sub execute_sql {
 	foreach my $p (@params){
 		$stm->bind_param($i++,$p);
 	} 
-	
 	$stm->execute or die " cannot execute sql : ".$sql;
 	
 	return $stm;

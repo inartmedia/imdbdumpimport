@@ -20,10 +20,10 @@ our @EXPORT_OK = ('process','init','destroy');
 our $init = 0;
 
 sub init {
-	lib::db::init(get_param(DATABASE_HANDLER));
-	imdb::StoreHandler::init(get_param(STORE_HANDLER)); 
 	lib::Log::init(get_param(LOGFILE),get_param(UNP_FILE));
+	lib::db::init(get_param(DATABASE_HANDLER));
 	lib::db::connect_to_database(@_);
+	imdb::StoreHandler::init(get_param(STORE_HANDLER));
 	$init = 1;
 	
 }
@@ -36,6 +36,7 @@ sub process{
 	open_file($file);
 	my @fsplit = split(/\//,$file);
 	my $file_name = $fsplit[$#fsplit];
+	print "Starting file : $file_name \n";
 	while(my $line = next_line){
 		$i++;
 		chomp($line);
@@ -56,7 +57,7 @@ sub process{
 		last if ($handler->how_many_lines>0 && $i > $handler->how_many_lines);
 	}
 	
-	
+	print "Finished file : $file_name \n";
 	
 	$handler->print_info;
 	
