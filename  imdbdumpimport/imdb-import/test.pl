@@ -116,7 +116,7 @@ sub test_wb {
 sub test_actor {
 	my $line1 =
 	  "Stuck in the Middle (2003) (V)  (archive footage)  [Themselves] <20>";
-	my $line2 = "\"10 Years Younger\" (2004/I)				2004";
+	my $line2 = "\"'Allo 'Allo!\" (1982) {A Bun in the Oven (#8.0)}	English";
 	my $line3 = "\"Rock Concert\" (1973) {(#3.21)}  [Themselves]";
 
 	my %movie = lib::IMDBUtil::parse_movie_info($line2);
@@ -125,5 +125,11 @@ sub test_actor {
 	return %movie;
 
 }
-my %m = test_actor;
-print_r(\%m);
+sub test_push {
+	my @arr = ("here");
+	unshift(@arr,"now");
+	foreach my $m (@arr){
+		print $m ."\n";
+	}
+}
+test_push;
