@@ -200,13 +200,17 @@ sub store_movie {
 
 			# retain the reference for future use
 			imdb::cache::add( $mref, $id );
-			$ret{sid} = $sid;
+			$ret{sid} = $id;
+			$sid = $id;
 		}
 		if ( $$mref{episode} ) {
 
 			my $episode = $$mref{episode};
 
 			# save the episode, get the reference from $obj{show}
+			if (!$sid){
+				lib::IMDBUtil::print_r(\%$mref);
+			}
 			my $esql =
 "insert into show_episodes (sid,title,year,years_active,season,episode_no,notes) values (?,?,?,?,?,?,?)";
 
