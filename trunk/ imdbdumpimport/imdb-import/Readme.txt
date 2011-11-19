@@ -27,11 +27,11 @@ database.user=imdb
 database.pwd=imdb
 
 # stuff to import
-import.movies=0
+import.movies=1
 import.actors=0
 import.actresses=0
-import.genres=0
-import.language=0
+import.genres=1
+import.language=1
 import.ratings=1
 
 # logfile configuration

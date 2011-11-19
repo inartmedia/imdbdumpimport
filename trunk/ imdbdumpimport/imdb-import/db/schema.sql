@@ -94,6 +94,7 @@ CREATE TABLE  `imdb_full`.`movies` (
   `rating` float DEFAULT NULL,
   `num_votes` int(10) unsigned DEFAULT NULL,
   `distribution` varchar(15) DEFAULT NULL,
+  `year_suffix` varchar(15) DEFAULT NULL,
   PRIMARY KEY (`mid`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2946946 DEFAULT CHARSET=latin1;
 
@@ -139,5 +140,6 @@ CREATE TABLE  `imdb_full`.`shows` (
   `rating` float DEFAULT NULL,
   `num_votes` int(10) unsigned DEFAULT NULL,
   `distribution` varchar(15) DEFAULT NULL,
+   `year_suffix` varchar(15) DEFAULT NULL,
   PRIMARY KEY (`sid`)
 ) ENGINE=InnoDB AUTO_INCREMENT=709835 DEFAULT CHARSET=latin1;

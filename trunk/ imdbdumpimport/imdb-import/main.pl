@@ -13,7 +13,7 @@ use imdb::actresses;
 use imdb::movies;
 use imdb::cache;
 use imdb::ratings;
-use imdb::genre; 
+use imdb::genres; 
 use imdb::language;
 
 sub process_main {

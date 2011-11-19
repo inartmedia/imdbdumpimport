@@ -180,7 +180,7 @@ sub parse_movie_info{
 		my ( $show, $year, $episode, $notes, $ep_times, $ep_season, $ep_num,$year_suffix,
 			$suspended );
 		$show    = t($1);
-		$year    = t($2);
+		$year    = $2;
 		$year_suffix = t($4);
 		$episode = t($7);
 		if ($episode) {
@@ -227,9 +227,7 @@ sub parse_movie_info{
 
 	}
 	else {
-
-		#debug($line);
-
+		debug($line);
 	}
 	
 	if ($ret{type}){
